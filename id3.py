@@ -189,7 +189,7 @@ def id3(data, uniqs, remaining_atts, target_attribute):
 
     for att_value in uniq_att_values:
         if att_value not in max_info_gain_partitions.keys():
-            None  # TODO return the most commen label in a label node
+            None  # TODO return the most common label in a label node
 
         partition = max_info_gain_partitions[att_value]
         partition_labels = get_class_labels(partition, target_attribute)
