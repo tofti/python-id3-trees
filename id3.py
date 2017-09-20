@@ -1,10 +1,12 @@
+import ast
 import csv
 import sys
 import math
-
+import os
 
 def load_csv_to_header_data(filename):
-    fs = csv.reader(open(filename))
+    path = os.path.normpath(os.getcwd() + filename)
+    fs = csv.reader(open(path))
     all_row = []
     for r in fs:
         all_row.append(r)
@@ -80,6 +82,24 @@ def val_mapper_with_default_creator(val_map, default):
     return val_mapper_with_default
 
 
+def get_uniq_values(data):
+    idx_to_name = data['idx_to_name']
+    name_to_idx = data['name_to_idx']
+    idxs = idx_to_name.keys()
+
+    val_map = {}
+    for idx in iter(idxs):
+        val_map[idx_to_name[idx]] = set()
+
+    for data_row in data['rows']:
+        for idx in idx_to_name.keys():
+            att_name = idx_to_name[idx]
+            val = data_row[idx]
+            if val not in val_map.keys():
+                val_map[att_name].add(val)
+    return val_map
+
+
 def get_class_labels(data, target_attribute):
     rows = data['rows']
     col_idx = data['name_to_idx'][target_attribute]
@@ -135,7 +155,7 @@ def avg_entropy_w_partitions(data, splitting_att, target_attribute):
     return avg_ent, partitions
 
 
-def id3(data, remaining_atts, target_attribute):
+def id3(data, uniqs, remaining_atts, target_attribute):
     labels = get_class_labels(data, target_attribute)
 
     node = {}
@@ -165,35 +185,48 @@ def id3(data, remaining_atts, target_attribute):
     remaining_atts_for_subtrees = set(remaining_atts)
     remaining_atts_for_subtrees.discard(max_info_gain_att)
 
-    for att_value in max_info_gain_partitions.keys():
+    uniq_att_values = uniqs[max_info_gain_att]
+
+    for att_value in uniq_att_values:
+        if att_value not in max_info_gain_partitions.keys():
+            None  # TODO return the most commen label in a label node
+
         partition = max_info_gain_partitions[att_value]
         partition_labels = get_class_labels(partition, target_attribute)
         if len(partition_labels.keys()) == 1:
             node['nodes'][att_value] = {'label': next(iter(partition_labels.keys()))}
         else:
-            node['nodes'][att_value] = id3(partition, remaining_atts_for_subtrees, target_attribute)
+            node['nodes'][att_value] = id3(partition, uniqs, remaining_atts_for_subtrees, target_attribute)
 
     return node
 
+
+def load_config(config_file):
+    with open(config_file, 'r') as myfile:
+        data = myfile.read().replace('\n', '')
+    return ast.literal_eval(data)
 
 def main():
     argv = sys.argv
     print("Command line args are {}: ".format(argv))
 
-    data = load_csv_to_header_data(argv[1])
-    data = project_columns(data, ['Outlook', 'Temperature', 'Humidity', 'Windy', 'PlayTennis'])
+    config = load_config(argv[1])
 
-    mappers = []
-    # [val_mapper_with_default_creator({'Current': 'Current', 'Fully Paid': 'Current'}, 'Not Current')]
+    data = load_csv_to_header_data(config['data_file'])
+    data = project_columns(data, config['data_project_columns'])
+
+    mappers = config['data_mappers']
 
     for mapper in mappers:
         transform_data(data, mapper)
 
-    target_attribute = 'PlayTennis'
+    target_attribute = config['target_attribute']
     remaining_attributes = set(data['header'])
     remaining_attributes.remove(target_attribute)
 
-    root = id3(data, remaining_attributes, target_attribute)
+    uniqs = get_uniq_values(data)
+
+    root = id3(data, uniqs, remaining_attributes, target_attribute)
 
     print(root)
 
