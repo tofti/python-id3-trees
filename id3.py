@@ -54,37 +54,6 @@ def project_columns(data, columns_to_project):
             'idx_to_name': idx_to_name}
 
 
-def transform_data(data, mapper):
-    col_name = mapper['column']
-    functor = mapper['functor']
-    col_idx = data['name_to_idx'][col_name]
-    data_rows = data['rows']
-    for row in data_rows:
-        #ff = compile(functor, 'fake', 'exec')
-        row[col_idx] = exec(functor(row[col_idx]))
-
-
-def val_mapper_creator(map):
-    def val_mapper(x):
-        if x in map:
-            return map[x]
-        else:
-            return None
-    return val_mapper
-
-
-def val_mapper_with_default_creator(val_map, default):
-    val_mapper = val_mapper_creator(val_map)
-
-    def val_mapper_with_default(x):
-        y = val_mapper(x)
-        if y is None:
-            return default
-        return y
-
-    return val_mapper_with_default
-
-
 def get_uniq_values(data):
     idx_to_name = data['idx_to_name']
     idxs = idx_to_name.keys()
