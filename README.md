@@ -33,7 +33,7 @@ You have to specify:
 
 ### Results
 
-[results]: https://github.com/tofti/python-trees/blob/master/resources/results.png "Tennis & Credit Assesment Examples"
+[results]: (https://github.com/tofti/python-trees/blob/master/resources/results.png) "Tennis & Credit Assesment Examples"
 
 ## TODO
 - Add code to evaluate input data
