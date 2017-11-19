@@ -3,7 +3,7 @@ python implementation of classification [id3 trees](https://en.wikipedia.org/wik
 
 The algorithm is a greedy, recursive algorithm that partitions a data set on the attribute that maximizes information gain. The information gain of attribute A is defined as the difference between the entropy of a data set and the size weighted average entropy for sub datasets when split on attribute A. 
 
-This implementation was informed by [Dr. Lutz Hamel's](http://homepage.cs.uri.edu/faculty/hamel/) notes [here](http://homepage.cs.uri.edu/faculty/hamel/courses/2016/spring2016/csc581/lecture-notes/31-decision-trees.pdf). A widely cited text on decision trees is [Machine Learning, by Tim Mitchell](https://www.amazon.com/Machine-Learning-Tom-M-Mitchell/dp/0070428077) you can find pages relevant to id3 [here](http://www.cs.princeton.edu/courses/archive/spr07/cos424/papers/mitchell-dectrees.pdf).
+This implementation was informed by [Dr. Lutz Hamel's](http://homepage.cs.uri.edu/faculty/hamel/) notes [here](http://homepage.cs.uri.edu/faculty/hamel/courses/2016/spring2016/csc581/lecture-notes/31-decision-trees.pdf). A widely cited text on decision trees is [Machine Learning, by Tim Mitchell](https://www.amazon.com/Machine-Learning-Tom-M-Mitchell/dp/0070428077), you can find pages relevant to id3 [here](http://www.cs.princeton.edu/courses/archive/spr07/cos424/papers/mitchell-dectrees.pdf).
 
 There are also some readbale notes on information gain from University of Washington [here](https://courses.cs.washington.edu/courses/cse455/10au/notes/InfoGain.pdf).
 
@@ -33,7 +33,7 @@ You have to specify:
 
 ### Results
 
-[results]: (https://github.com/tofti/python-trees/blob/master/resources/results.png) "Tennis & Credit Assesment Examples"
+![results](https://github.com/tofti/python-trees/blob/master/resources/results.png "Tennis & Credit Assesment Examples")
 
 ## TODO
 - Add code to evaluate input data
