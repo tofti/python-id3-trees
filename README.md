@@ -12,7 +12,7 @@ Launch the python interpreter
 
 ```python id3.py ./resources/<config.cfg>```
 
-Where config.cfg is a plain text configuration file. The format of the config file is:
+Where config.cfg is a plain text configuration file. The format of the config file is a python abstract syntax tree with the following fields:
 
 ``
 {
