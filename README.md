@@ -8,7 +8,7 @@ This implementation was informed by [Dr. Lutz Hamel's](http://homepage.cs.uri.ed
 There are also some readbale notes on information gain from University of Washington [here](https://courses.cs.washington.edu/courses/cse455/10au/notes/InfoGain.pdf).
 
 ## Running the code
-Launch the python interpreter 
+Run the code with the python interpreter: 
 
 ```python id3.py ./resources/<config.cfg>```
 
@@ -36,5 +36,5 @@ You have to specify:
 ![results](https://github.com/tofti/python-trees/blob/master/resources/results.png "Tennis & Credit Assesment Examples")
 
 ## TODO
-- Add code to evaluate input data
+- Add code to classify data.
 - Add code to prune rules (C4.5 modifications)
