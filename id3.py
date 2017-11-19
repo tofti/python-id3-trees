@@ -4,6 +4,7 @@ import sys
 import math
 import os
 
+
 def load_csv_to_header_data(filename):
     path = os.path.normpath(os.getcwd() + filename)
     fs = csv.reader(open(path))
@@ -53,11 +54,14 @@ def project_columns(data, columns_to_project):
             'idx_to_name': idx_to_name}
 
 
-def transform_data(data, col_name, functor):
+def transform_data(data, mapper):
+    col_name = mapper['column']
+    functor = mapper['functor']
     col_idx = data['name_to_idx'][col_name]
     data_rows = data['rows']
     for row in data_rows:
-        row[col_idx] = functor(row[col_idx])
+        #ff = compile(functor, 'fake', 'exec')
+        row[col_idx] = exec(functor(row[col_idx]))
 
 
 def val_mapper_creator(map):
@@ -66,7 +70,6 @@ def val_mapper_creator(map):
             return map[x]
         else:
             return None
-
     return val_mapper
 
 
@@ -84,7 +87,6 @@ def val_mapper_with_default_creator(val_map, default):
 
 def get_uniq_values(data):
     idx_to_name = data['idx_to_name']
-    name_to_idx = data['name_to_idx']
     idxs = idx_to_name.keys()
 
     val_map = {}
@@ -124,9 +126,9 @@ def entropy(n, labels):
 def partition_data(data, group_att):
     partitions = {}
     data_rows = data['rows']
-    group_att_idx = data['name_to_idx'][group_att]
+    partition_att_idx = data['name_to_idx'][group_att]
     for row in data_rows:
-        row_val = row[group_att_idx]
+        row_val = row[partition_att_idx]
         if row_val not in partitions.keys():
             partitions[row_val] = {
                 'name_to_idx': data['name_to_idx'],
@@ -155,6 +157,11 @@ def avg_entropy_w_partitions(data, splitting_att, target_attribute):
     return avg_ent, partitions
 
 
+def most_common_label(labels):
+    mcl = max(labels, key=lambda k: labels[k])
+    return mcl
+
+
 def id3(data, uniqs, remaining_atts, target_attribute):
     labels = get_class_labels(data, target_attribute)
 
@@ -162,6 +169,10 @@ def id3(data, uniqs, remaining_atts, target_attribute):
 
     if len(labels.keys()) == 1:
         node['label'] = next(iter(labels.keys()))
+        return node
+
+    if len(remaining_atts) == 0:
+        node['label'] = most_common_label(labels)
         return node
 
     n = len(data['rows'])
@@ -179,6 +190,10 @@ def id3(data, uniqs, remaining_atts, target_attribute):
             max_info_gain_att = remaining_att
             max_info_gain_partitions = partitions
 
+    if max_info_gain is None:
+        node['label'] = most_common_label(labels)
+        return node
+
     node['attribute'] = max_info_gain_att
     node['nodes'] = {}
 
@@ -189,14 +204,10 @@ def id3(data, uniqs, remaining_atts, target_attribute):
 
     for att_value in uniq_att_values:
         if att_value not in max_info_gain_partitions.keys():
-            None  # TODO return the most common label in a label node
+            node['nodes'][att_value] = {'label': most_common_label(labels)}
 
         partition = max_info_gain_partitions[att_value]
-        partition_labels = get_class_labels(partition, target_attribute)
-        if len(partition_labels.keys()) == 1:
-            node['nodes'][att_value] = {'label': next(iter(partition_labels.keys()))}
-        else:
-            node['nodes'][att_value] = id3(partition, uniqs, remaining_atts_for_subtrees, target_attribute)
+        node['nodes'][att_value] = id3(partition, uniqs, remaining_atts_for_subtrees, target_attribute)
 
     return node
 
@@ -205,6 +216,29 @@ def load_config(config_file):
     with open(config_file, 'r') as myfile:
         data = myfile.read().replace('\n', '')
     return ast.literal_eval(data)
+
+
+def pretty_print_tree(root):
+    stack = []
+    rules = set()
+
+    def traverse(node, stack, rules):
+        if 'label' in node:
+            stack.append(' THEN ' + node['label'])
+            rules.add(''.join(stack))
+            stack.pop()
+        elif 'attribute' in node:
+            ifnd = 'IF ' if not stack else ' AND '
+            stack.append(ifnd + node['attribute'] + ' EQUALS ')
+            for subnode_key in node['nodes']:
+                stack.append(subnode_key)
+                traverse(node['nodes'][subnode_key], stack, rules)
+                stack.pop()
+            stack.pop()
+
+    traverse(root, stack, rules)
+    print(os.linesep.join(rules))
+
 
 def main():
     argv = sys.argv
@@ -215,11 +249,6 @@ def main():
     data = load_csv_to_header_data(config['data_file'])
     data = project_columns(data, config['data_project_columns'])
 
-    mappers = config['data_mappers']
-
-    for mapper in mappers:
-        transform_data(data, mapper)
-
     target_attribute = config['target_attribute']
     remaining_attributes = set(data['header'])
     remaining_attributes.remove(target_attribute)
@@ -228,7 +257,7 @@ def main():
 
     root = id3(data, uniqs, remaining_attributes, target_attribute)
 
-    print(root)
+    pretty_print_tree(root)
 
 
 if __name__ == "__main__": main()

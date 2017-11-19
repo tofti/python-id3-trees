@@ -1,0 +1,15 @@
+risk,collateral,income,debt,credithistory
+high,none,$0to$15K,high,bad
+high,none,$15Kto$35K,high,unknown
+moderate,none,$15Kto$35K,low,unknown
+high,none,$0to$15K,low,unknown
+low,none,over$35K,low,unknown
+low,adequate,over$35K,low,unknown
+high,none,$0to$15K,low,bad
+moderate,adequate,over$35K,low,bad
+low,none,over$35K,low,good
+low,adequate,over$35K,high,good
+high,none,$0to$15K,high,good
+moderate,none,$15Kto$35K,high,good
+low,none,over$35K,high,good
+high,none,$15Kto$35K,high,bad
