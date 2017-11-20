@@ -1,5 +1,5 @@
 # python-trees
-python implementation of classification [id3 trees](https://en.wikipedia.org/wiki/ID3_algorithm). id3 is a machine learning algorithm for building classification trees developed by Ross Quinlan 1985.
+python implementation of classification [id3 trees](https://en.wikipedia.org/wiki/ID3_algorithm). id3 is a machine learning algorithm for building classification trees developed by Ross Quinlan in/around 1986.
 
 The algorithm is a greedy, recursive algorithm that partitions a data set on the attribute that maximizes information gain. The information gain of attribute A is defined as the difference between the entropy of a data set S and the size weighted average entropy for sub datasets S' when split on attribute A. 
 
