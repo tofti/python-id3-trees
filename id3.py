@@ -174,7 +174,7 @@ def id3(data, uniqs, remaining_atts, target_attribute):
     for att_value in uniq_att_values:
         if att_value not in max_info_gain_partitions.keys():
             node['nodes'][att_value] = {'label': most_common_label(labels)}
-
+            continue
         partition = max_info_gain_partitions[att_value]
         node['nodes'][att_value] = id3(partition, uniqs, remaining_atts_for_subtrees, target_attribute)
 
