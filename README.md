@@ -27,6 +27,31 @@ You have to specify:
  + which columns to project from the file (useful if you have a large input file, and are only interested in a subset of columns)
  + the target attribute, that you want to predict.
 
+### Docker 
+```
+FROM python:3.6.8-alpine
+
+WORKDIR /usr/src/app
+RUN apk add --no-cache git && git clone https://github.com/tofti/python-id3-trees.git
+
+WORKDIR /usr/src/app/python-id3-trees
+
+ENTRYPOINT [ "python", "id3.py" ]
+```
+To run the built in examples:
+```
+docker run tofti-id3-trees ./resources/tennis.cfg
+```
+
+Or your own example after creating a config file, and csv data file:
+```
+docker run -v <localpath>:/<dockerpath>" tofti-id3-trees <dockerpath>/config.cfg
+```
+e.g.
+```
+docker run -v "/c/Users/tofti/dvol/id3:/data" tofti-id3-trees /data/credithistory_test.cfg
+```
+
 ### Examples
 1. tennis.cfg is the 'Play Tennis' example from Machine Learning, by Tim Mitchell, also used by Dr. Lutz Hamel in his lecture notes, both referenced above.
 2. credithistory.cfg is the credit risk assement example from [Artificial Intelligence: Structures and Strategies for Complex Problem Solving (6th Edition), Luger](https://www.amazon.com/Artificial-Intelligence-Structures-Strategies-Complex/dp/0321545893), see Table 10.1 & Figure 10.14 (full text is available online asof 11/19/2017).  
